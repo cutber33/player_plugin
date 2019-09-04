@@ -10,25 +10,34 @@ export class TimeSlider {
   last: number;
   //current: number;
   interval: number;
-  public onChange: (newTimestamp: number, previousTimestamp: number) => void;
+  public onChange: (newTimestamp: number) => void;
   shown: number;
   animation: boolean;
   play: any;
   startTime: number;
   endTime: number;
   attribution: string;
+
   public configure(configuration) {
     //Get all configurations
     this.first = configuration.first;
     this.last = configuration.last;
-    //this.current = configuration.current;
     this.interval = configuration.interval;
     this.animation = false;
     this.endTime = configuration.endTime;
     this.startTime = configuration.startTime;
-    //this.layer = configuration.layer;
     this.attribution = configuration.attribution;
 
+    /*
+    if (typeof configuration.onChange === "function") {
+      this.onChange = configuration.onChange;
+    } else {
+      console.log("scheisse");
+    }
+
+    console.log(this.onChange);
+
+    */
     // Callback Method... needs improvment
     /*
     if (typeof configuration.onChangeCallback === "function") {
@@ -65,7 +74,6 @@ export class TimeSlider {
 
     this.shown = this.first;
 
-    this.onChange(this.shown, null);
     //CSS File
     let style = document.createElement("style");
     style.innerHTML =
@@ -200,8 +208,10 @@ export class TimeSlider {
     });
 
     let self = this;
+    self.onChange(self.shown);
+
     window.onload = function() {
-      self.setTimestamp();
+      //self.setTimestamp();
       console.log("init");
     };
   }
@@ -241,11 +251,11 @@ export class TimeSlider {
     if (this.shown == this.last) {
       //Meldung
       let nextTimestamp = this.first;
-      this.onChange(nextTimestamp, this.shown);
+      this.onChange(nextTimestamp);
     } else {
       let nextTimestamp = this.shown + this.interval;
-      this.onChange(nextTimestamp, this.shown);
-      console.log(this.first);
+      this.onChange(nextTimestamp);
+      console.log("fw :", nextTimestamp, this.interval);
     }
   }
 
@@ -254,10 +264,10 @@ export class TimeSlider {
     if (this.shown == this.first) {
       //Meldung
       let nextTimestamp = this.last;
-      this.onChange(nextTimestamp, this.shown);
+      this.onChange(nextTimestamp);
     } else {
       let nextTimestamp = this.shown - this.interval;
-      this.onChange(nextTimestamp, this.shown);
+      this.onChange(nextTimestamp);
     }
   }
 
@@ -291,12 +301,13 @@ export class TimeSlider {
     let rounded = this.roundtoInterval(newTimestamp, this.interval, this.first);
     newTimestamp = rounded;
     console.log(newTimestamp, this.first, rounded);
-    this.onChange(newTimestamp, this.shown);
+    this.onChange(newTimestamp);
   }
 
   //uodates all visable timestamps as well as the timeslider
-  setTimestamp() {
+  setTimestamp(newTimestamp) {
     let self = this;
+    self.shown = newTimestamp;
 
     document.getElementById("currentTime").innerHTML = this.getTime(this.shown);
     document.getElementById("currentDate").innerHTML = this.getDate(this.shown);
@@ -309,6 +320,10 @@ export class TimeSlider {
 
     document.getElementById("timeProgress").style.width = progressWidth;
 
-    console.log(progressWidth);
+    console.log(self.last, self.shown, progressWidth);
+  }
+
+  public setOnChange(pFunction) {
+    this.onChange = pFunction;
   }
 }

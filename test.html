@@ -104,6 +104,7 @@
 
           //TODO: Performance bei schlechtem Internet (evtl. Preload)
 
+          /*
           const layer = new Layer(url, map);
 
           let ts = new Player({
@@ -123,26 +124,27 @@
               );
             }
           });
+            */
         });
 
       //const layer = new Layer(mbUrl, map);
 
-      
       const layer = new TimedLayer(url, map);
       const timeSlider = new TimeSlider();
-      layer.onLoad(() => {
-        console.log("onload");
+
+      layer.setOnLoad(() => {
+        timeSlider.setOnChange(newTimestamp => {
+          layer.refresh(newTimestamp);
+          timeSlider.setTimestamp(newTimestamp);
+        });
         timeSlider.configure({
           first: layer.getFirst(),
           last: layer.getLast(),
           interval: layer.getInterval(),
           startTime: Date.now() - 3600000 * 6,
-          endTime: Date.now() - 3600000 * 3,
-          onChange: (newTimestamp, previousTimestamp) => {}
-          }
+          endTime: Date.now() - 3600000 * 3
         });
       });
-      
     </script>
   </body>
 </html>
