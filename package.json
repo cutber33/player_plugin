@@ -1,0 +1,32 @@
+{
+  "name": "player-plugin",
+  "version": "0.0.1",
+  "description": "plugin to layer satellite and radar data over given maps",
+  "main": "player-plugin.min.js",
+  "types": "player-plugin.d.ts",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/cutber33/player_plugin.git"
+  },
+  "dependencies": {
+    "@types/jquery": "^3.3.30",
+    "mapbox-gl": "^1.0.0",
+    "npm": "^6.10.1"
+  },
+  "devDependencies": {
+    "@types/node": "^12.6.2",
+    "npm-run-all": "^4.1.5",
+    "rimraf": "^2.6.3",
+    "rollup": "^1.17.0",
+    "typescript": "^3.5.3",
+    "uglify-es": "^3.3.9"
+  },
+  "scripts": {
+    "_clear": "rimraf build/compiled/*",
+    "_tsc": "tsc",
+    "_make-bundle": "node build/make-bundle",
+    "build": "run-s _clear _tsc _make-bundle",
+    "watch": "tsc --watch"
+  }
+}
