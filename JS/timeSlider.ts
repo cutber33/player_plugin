@@ -28,23 +28,6 @@ export class TimeSlider {
     this.startTime = configuration.startTime;
     this.attribution = configuration.attribution;
 
-    /*
-    if (typeof configuration.onChange === "function") {
-      this.onChange = configuration.onChange;
-    } else {
-      console.log("scheisse");
-    }
-
-    console.log(this.onChange);
-
-    */
-    // Callback Method... needs improvment
-    /*
-    if (typeof configuration.onChangeCallback === "function") {
-      this.onChangeCallback = configuration.onChangeCallback;
-    }
-    */
-
     // Round and convert timestamps to unixtime
     this.startTime = Math.round(configuration.startTime / 1000);
     this.endTime = Math.round(configuration.endTime / 1000);
@@ -81,14 +64,14 @@ export class TimeSlider {
       //TODO: Responsive --> Percentages but min and max width. Not vw for fonts search for better solution. iPad und Smartphone grenze. Eigentlich nur Leiste unten anpassen
       //Überschneidungen in class zusammenfassen
 
-      "body{font-family: Arial, Helvetica, sans-serif} ul {list-style-type: none; padding: 0} p,span,div {color: white} div {background: black; opacity: 0.85} #currentTimestamp {border-radius: 4px; background: black; opacity: 0.85; position: absolute; top :10px; left: 60px; width: 100px; display: flex; justify-content: center; font-size: 1em; flex-direction: column} .controlButton:hover, .timeElement:hover{background: grey}.controlButton:active, .timeElement:active{background: lightblue} .controlButton { color: black; background: white; border: solid 4px black; width: 45px; height: 45px; float: left; text-align: center; vertical-align: middle; line-height: 45px; } #map { z-index: -999; } .controls {display: flex; justify-content: center; align-items: center; cursor: pointer; width: 900px; height: 50px; background: black; opacity: 0.85; position: absolute; bottom: 10px; left: 0; right: 0; border: solid 4px black; border-radius: 4px; margin: 0 auto} #timeSlider{width: 800px; float: left; padding: 20px} .timeElement{float: left; background: white; height: 45px; text-align: center; vertical-align: middle; line-height: 45px; width: 156px; float: left; border-right: 5px solid black} .timeElement:last-child {border-right: 0} #timeProgress {min-width: 5px; background: red; width: " +
+      "body{font-family: Arial, Helvetica, sans-serif} ul {list-style-type: none; padding: 0} p,span,div {color: white} div {background: black; opacity: 0.85} #currentTimestamp {border-radius: 4px; background: black; opacity: 0.85; position: absolute; top :10px; left: 60px; width: 100px; display: flex; justify-content: center; font-size: 1em; flex-direction: column} .controlButton:hover, .timeElement:hover{background: grey}.controlButton:active, .timeElement:active{background: lightblue} .controlButton { color: black; background: white; border: solid 4px black; width: 45px; height: 45px; float: left; text-align: center; vertical-align: middle; line-height: 45px; } #map { z-index: -999; } .controls {display: flex; justify-content: center; align-items: center; cursor: pointer; width: 970px; height: 50px; background: black; opacity: 0.85; position: absolute; bottom: 10px; left: 0; right: 0; border: solid 4px black; border-radius: 4px; margin: 0 auto} #timeSlider{width: 800px; float: left; padding: 20px} .timeElement{float: left; background: white; height: 45px; text-align: center; vertical-align: middle; line-height: 45px; width: 156px; float: left; border-right: 5px solid black} .timeElement:last-child {border-right: 0} #timeProgress {min-width: 5px; background: red; width: " +
       (
         (1 - (this.last - this.shown) / (this.last - this.first)) *
         100
       ).toString() +
       "%" +
       "; position: relative; height: 6px; margin-top: -7px} #startTime {margin-right: -35px;margin-top: 25px} #endTime {margin-left: -35px;margin-top: 25px} #layers{position: absolute; right: 1em; vertical-align: middle; padding: .7em; background: black; opacity: 0.85; top: 1em; border-radius: 4px} .date{text-align: center; padding: 2px; font-size: 2em}" +
-      "#attribution {color: #dddddd; font-size: 0.6em;position: absolute;left: 1em;bottom: 1em}";
+      "#attribution {color: #dddddd; font-size: 0.6em;position: absolute;left: 1em;bottom: 1em} #offsetSlider {height: 6px; background: gray; float: right; margin-top: -7px} #currentTime {float: right; margin-left: 0px; margin-right: -42px; margin-top: -35px; padding: 4px; background: grey; border-radius: 5px; width: 84px; text-align: center;} #backwardsButton {margin-right:20px} #forwardButton {margin-left:20px}";
     document.getElementsByTagName("head")[0].appendChild(style);
 
     //creates all HTML Elements
@@ -96,22 +79,10 @@ export class TimeSlider {
     controls.setAttribute("class", "controls");
     controls.setAttribute("id", "controlBar");
 
-    let currentTimestamp = document.createElement("div");
-    currentTimestamp.setAttribute("id", "currentTimestamp");
-
-    let currentTime = document.createElement("div");
-    currentTime.setAttribute("class", "date");
+    let currentTime = document.createElement("span");
     currentTime.setAttribute("id", "currentTime");
-
-    currentTime.innerHTML = this.getTime(this.shown);
-
-    let currentDate = document.createElement("div");
-    currentDate.setAttribute("class", "date");
-    currentDate.setAttribute("id", "currentDate");
-    currentDate.innerHTML = this.getDate(this.shown);
-
-    currentTimestamp.appendChild(currentTime);
-    currentTimestamp.appendChild(currentDate);
+    currentTime.innerHTML =
+      this.getDay(this.shown) + ", " + this.getTime(this.shown);
 
     let playButton = document.createElement("div");
     playButton.setAttribute("class", "controlButton");
@@ -119,6 +90,7 @@ export class TimeSlider {
 
     let forwardButton = document.createElement("div");
     forwardButton.setAttribute("class", "controlButton");
+    forwardButton.setAttribute("id", "forwardButton");
     forwardButton.innerHTML = ">>";
 
     let timeSlider = document.createElement("div");
@@ -126,6 +98,13 @@ export class TimeSlider {
 
     let timeProgress = document.createElement("div");
     timeProgress.setAttribute("id", "timeProgress");
+
+    timeProgress.appendChild(currentTime);
+
+    let offsetSlider = document.createElement("div");
+    offsetSlider.setAttribute("id", "offsetSlider");
+
+    //Put span in timeProgress div. Like patrick did with his map
 
     let startTime = document.createElement("span");
     startTime.setAttribute("id", "startTime");
@@ -144,6 +123,7 @@ export class TimeSlider {
     list.appendChild(title);
 
     timeSlider.appendChild(timeProgress);
+    timeSlider.appendChild(offsetSlider);
 
     let options = ["1", "2"];
 
@@ -166,6 +146,7 @@ export class TimeSlider {
 
     let backwardsButton = document.createElement("div");
     backwardsButton.setAttribute("class", "controlButton");
+    backwardsButton.setAttribute("id", "backwardsButton");
     backwardsButton.innerHTML = "<<";
 
     let attribution = document.createElement("div");
@@ -176,7 +157,7 @@ export class TimeSlider {
     let body = document.getElementsByTagName("body")[0];
     body.appendChild(controls);
     controls.appendChild(playButton);
-    body.appendChild(currentTimestamp);
+    //body.appendChild(currentTimestamp);
     controls.appendChild(backwardsButton);
     controls.appendChild(startTime);
     controls.appendChild(timeSlider);
@@ -205,15 +186,15 @@ export class TimeSlider {
 
     timeSlider.addEventListener("click", (event: CustomEvent) => {
       this.onPickedTimestamp(event);
+      if (this.animation == false) {
+        playButton.innerHTML = "&#9658";
+      } else {
+        playButton.innerHTML = "||";
+      }
     });
 
     let self = this;
     self.onChange(self.shown);
-
-    window.onload = function() {
-      //self.setTimestamp();
-      console.log("init");
-    };
   }
 
   //Converts unixtime to hh:mm
@@ -233,17 +214,11 @@ export class TimeSlider {
   }
 
   //converts unixtime to ISO Date (MM-DD)
-  getDate(pTimestamp) {
+  getDay(pTimestamp) {
     let date = new Date(pTimestamp * 1000);
-    let month = (date.getMonth() + 1).toString();
-    let day = date.getDate().toString();
-    if (month.length < 2) {
-      month = "0" + month;
-    }
-    if (day.length < 2) {
-      day = "0" + day;
-    }
-    return month + "-" + day;
+    let day = date.getDay();
+    let dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    return dayNames[day];
   }
 
   //jumps forward one timestamp
@@ -255,7 +230,6 @@ export class TimeSlider {
     } else {
       let nextTimestamp = this.shown + this.interval;
       this.onChange(nextTimestamp);
-      console.log("fw :", nextTimestamp, this.interval);
     }
   }
 
@@ -287,40 +261,48 @@ export class TimeSlider {
 
   //function to find nearest available timestamp
   roundtoInterval(timestamp, interval, offset) {
-    return Math.ceil((timestamp - offset) / interval) * interval + offset;
+    return Math.round((timestamp - offset) / interval) * interval + offset;
   }
 
   //sets new timestamp when clicked on the timeslider
   onPickedTimestamp(click) {
+    if (this.animation == true) {
+      this.onPlay();
+    }
     let slider = document.getElementById("timeSlider");
     let controlBar = document.getElementById("controlBar");
-    let offsetLeft = slider.offsetLeft + controlBar.offsetLeft;
+    let progress = document.getElementById("timeProgress");
+    let span = document.getElementById("startTime");
+    let offsetLeft =
+      controlBar.offsetLeft +
+      progress.offsetLeft +
+      (slider.offsetLeft - span.offsetLeft);
     let posX = click.pageX - offsetLeft;
+
     let newTimestamp =
       this.first + (posX / slider.offsetWidth) * (this.last - this.first);
     let rounded = this.roundtoInterval(newTimestamp, this.interval, this.first);
     newTimestamp = rounded;
-    console.log(newTimestamp, this.first, rounded);
     this.onChange(newTimestamp);
   }
 
-  //uodates all visable timestamps as well as the timeslider
   setTimestamp(newTimestamp) {
     let self = this;
     self.shown = newTimestamp;
 
-    document.getElementById("currentTime").innerHTML = this.getTime(this.shown);
-    document.getElementById("currentDate").innerHTML = this.getDate(this.shown);
+    document.getElementById("currentTime").innerHTML =
+      this.getDay(this.shown) + ", " + this.getTime(this.shown);
 
     let progressWidth =
-      (
-        (1 - (self.last - self.shown) / (self.last - self.first)) *
-        100
-      ).toString() + "%";
+      (1 - (self.last - self.shown) / (self.last - self.first)) * 100;
 
-    document.getElementById("timeProgress").style.width = progressWidth;
+    document.getElementById("timeProgress").style.width =
+      progressWidth.toString() + "%";
 
-    console.log(self.last, self.shown, progressWidth);
+    let offsetWidth = 100 - progressWidth;
+
+    document.getElementById("offsetSlider").style.width =
+      offsetWidth.toString() + "%";
   }
 
   public setOnChange(pFunction) {
