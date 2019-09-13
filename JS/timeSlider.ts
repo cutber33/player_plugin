@@ -1,5 +1,3 @@
-import { brotliCompressSync } from "zlib";
-
 /**
  * Created by johann on 08.07.19.
  */
@@ -64,14 +62,14 @@ export class TimeSlider {
       //TODO: Responsive --> Percentages but min and max width. Not vw for fonts search for better solution. iPad und Smartphone grenze. Eigentlich nur Leiste unten anpassen
       //Überschneidungen in class zusammenfassen
 
-      "body{font-family: Arial, Helvetica, sans-serif} ul {list-style-type: none; padding: 0} p,span,div {color: white} div {background: black; opacity: 0.85} #currentTimestamp {border-radius: 4px; background: black; opacity: 0.85; position: absolute; top :10px; left: 60px; width: 100px; display: flex; justify-content: center; font-size: 1em; flex-direction: column} .controlButton:hover, .timeElement:hover{background: grey}.controlButton:active, .timeElement:active{background: lightblue} .controlButton { color: black; background: white; border: solid 4px black; width: 45px; height: 45px; float: left; text-align: center; vertical-align: middle; line-height: 45px; } #map { z-index: -999; } .controls {display: flex; justify-content: center; align-items: center; cursor: pointer; width: 970px; height: 50px; background: black; opacity: 0.85; position: absolute; bottom: 10px; left: 0; right: 0; border: solid 4px black; border-radius: 4px; margin: 0 auto} #timeSlider{width: 800px; float: left; padding: 20px} .timeElement{float: left; background: white; height: 45px; text-align: center; vertical-align: middle; line-height: 45px; width: 156px; float: left; border-right: 5px solid black} .timeElement:last-child {border-right: 0} #timeProgress {min-width: 5px; background: red; width: " +
+      "body{font-family: Arial, Helvetica, sans-serif} ul {list-style-type: none; padding: 0} p,span,div {color: white} #currentTimestamp {border-radius: 4px; background: black; opacity: 0.85; position: absolute; top :10px; left: 60px; width: 100px; display: flex; justify-content: center; font-size: 1em; flex-direction: column} .controlButton:hover, .timeElement:hover{background: grey}.controlButton:active, .timeElement:active{background: lightblue} .controlButton { color: black; background: white; border: solid 4px black; width: 45px; height: 45px; float: left; text-align: center; vertical-align: middle; line-height: 45px; } #map { z-index: -999; } .controls {display: flex; justify-content: center; align-items: center; cursor: pointer; width: 970px; height: 50px; background: black; opacity: 0.85; position: absolute; bottom: 10px; left: 0; right: 0; border: solid 4px black; border-radius: 4px; margin: 0 auto} #timeSlider{width: 800px; float: left; padding: 20px} .timeElement{float: left; background: white; height: 45px; text-align: center; vertical-align: middle; line-height: 45px; width: 156px; float: left; border-right: 5px solid black} .timeElement:last-child {border-right: 0} #timeProgress {min-width: 5px; background: red; width: " +
       (
         (1 - (this.last - this.shown) / (this.last - this.first)) *
         100
       ).toString() +
       "%" +
       "; position: relative; height: 6px; margin-top: -7px} #startTime {margin-right: -35px;margin-top: 25px} #endTime {margin-left: -35px;margin-top: 25px} #layers{position: absolute; right: 1em; vertical-align: middle; padding: .7em; background: black; opacity: 0.85; top: 1em; border-radius: 4px} .date{text-align: center; padding: 2px; font-size: 2em}" +
-      "#attribution {color: #dddddd; font-size: 0.6em;position: absolute;left: 1em;bottom: 1em} #offsetSlider {height: 6px; background: gray; float: right; margin-top: -7px} #currentTime {float: right; margin-left: 0px; margin-right: -42px; margin-top: -35px; padding: 4px; background: grey; border-radius: 5px; width: 84px; text-align: center;} #backwardsButton {margin-right:20px} #forwardButton {margin-left:20px}";
+      "#attribution {color: #dddddd; font-size: 0.6em;position: absolute;left: 1em;bottom: 1em} #offsetSlider {height: 6px; background: gray; float: right; margin-top: -7px} #currentTime {float: right; margin-left: 0px; margin-right: -46px; margin-top: -35px; padding: 4px; background: grey; border-radius: 5px; width: 84px; text-align: center;} #backwardsButton {margin-right:20px} #forwardButton {margin-left:20px} #currentCircle {background: red; width: 16px; height: 16px; border: 5px darkred; border-radius: 8px; position: absolute; margin-top: -11px}";
     document.getElementsByTagName("head")[0].appendChild(style);
 
     //creates all HTML Elements
@@ -101,6 +99,9 @@ export class TimeSlider {
 
     timeProgress.appendChild(currentTime);
 
+    let currentCircle = document.createElement("div");
+    currentCircle.setAttribute("id", "currentCircle");
+
     let offsetSlider = document.createElement("div");
     offsetSlider.setAttribute("id", "offsetSlider");
 
@@ -124,6 +125,29 @@ export class TimeSlider {
 
     timeSlider.appendChild(timeProgress);
     timeSlider.appendChild(offsetSlider);
+    timeSlider.appendChild(currentCircle);
+
+    /*
+
+    let timeOptions = document.createElement("select");
+    timeOptions.setAttribute("id", "timeOptions");
+
+    let options = [
+      "last Hour",
+      "last 2 Hours",
+      "last 4 Hours",
+      "Last 6 Hours",
+      "Last 12 Hours",
+      "Last 24 Hours"
+    ];
+    let values = ["1", "2", "4", "6", "12", "24"];
+
+    for (let i = 0; i < options.length - 1; i++) {
+      let elem = document.createElement("option");
+      elem.setAttribute("value", values[i]);
+      elem.innerHTML = options[i];
+      timeOptions.appendChild(elem);
+    }
 
     let options = ["1", "2"];
 
@@ -143,15 +167,18 @@ export class TimeSlider {
     }
 
     layers.appendChild(list);
+    */
 
     let backwardsButton = document.createElement("div");
     backwardsButton.setAttribute("class", "controlButton");
     backwardsButton.setAttribute("id", "backwardsButton");
     backwardsButton.innerHTML = "<<";
 
+    /*
     let attribution = document.createElement("div");
     attribution.setAttribute("id", "attribution");
     attribution.innerHTML = this.attribution;
+    */
 
     //Append all Elements to the page
     let body = document.getElementsByTagName("body")[0];
@@ -163,10 +190,28 @@ export class TimeSlider {
     controls.appendChild(timeSlider);
     controls.appendChild(endTime);
     controls.appendChild(forwardButton);
-    body.appendChild(layers);
-    body.appendChild(attribution);
+    //body.appendChild(attribution);
+    //body.appendChild(timeOptions);
 
     //EventListener
+
+    /*
+    timeOptions.addEventListener("click", (event: CustomEvent) => {
+      console.log(timeOptions.options[timeOptions.selectedIndex].value);
+      let choice = timeOptions.options[timeOptions.selectedIndex].value;
+      let choiceTime = Date.now() - parseInt(choice) * 3600000;
+      choiceTime = Math.round(choiceTime / 1000);
+      let choiceTimeRounded = this.roundtoInterval(
+        choiceTime,
+        this.interval,
+        this.first
+      );
+      console.log(choiceTimeRounded, this.first);
+      this.first = choiceTimeRounded;
+      console.log(this.first);
+    });
+    */
+
     playButton.addEventListener("click", (event: CustomEvent) => {
       this.onPlay();
       if (this.animation == false) {
@@ -298,6 +343,13 @@ export class TimeSlider {
 
     document.getElementById("timeProgress").style.width =
       progressWidth.toString() + "%";
+
+    console.log(document.getElementById("timeProgress").offsetWidth);
+    document.getElementById("currentCircle").style.marginLeft =
+      (
+        document.getElementById("timeProgress").offsetWidth -
+        document.getElementById("currentCircle").offsetWidth / 2
+      ).toString() + "px";
 
     let offsetWidth = 100 - progressWidth;
 
