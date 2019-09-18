@@ -1,6 +1,6 @@
 {
   "name": "timeslider-plugin",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "plugin to control unixtime stamps through a timeslider",
   "main": "build/compiled/timeSlider.js",
   "types": "timeSlider.d.ts",
