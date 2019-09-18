@@ -1,9 +1,9 @@
 {
-  "name": "player-plugin",
+  "name": "timeslider-plugin",
   "version": "0.0.1",
-  "description": "plugin to layer satellite and radar data over given maps",
-  "main": "player-plugin.min.js",
-  "types": "player-plugin.d.ts",
+  "description": "plugin to control unixtime stamps through a timeslider",
+  "main": "build/compiled/timeSlider.js",
+  "types": "timeSlider.d.ts",
   "license": "MIT",
   "repository": {
     "type": "git",

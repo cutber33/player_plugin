@@ -1,8 +1,7 @@
 node_modules
-/build/compiled
 /meteoblue-webmap-plugin.d.ts
 /meteoblue-webmap-plugin.min.js
-node_modules
+
 
 
 # Created by https://www.gitignore.io/api/node,linux,macos,windows,intellij,visualstudiocode
